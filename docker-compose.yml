@@ -1,0 +1,50 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: coffee_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  auth:
+    build: ./auth
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      MONGO_URI: mongodb://mongo:27017/coffeeapp
+      MONGODB_URI: mongodb://mongo:27017/coffeeapp
+      JWT_SECRET: "dev_secret_change_me"
+      JWT_ISSUER: "coffeeapp"
+      JWT_AUDIENCE: "coffeeapp-mobile"
+    depends_on:
+      - mongo
+
+  products:
+    build: ./products
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://mongo:27017/coffeeapp
+      MONGODB_URI: mongodb://mongo:27017/coffeeapp
+    depends_on:
+      - mongo
+
+  orders:
+    build: ./orders
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      MONGO_URI: mongodb://mongo:27017/coffeeapp
+      MONGODB_URI: mongodb://mongo:27017/coffeeapp
+      JWT_SECRET: "dev_secret_change_me"
+      JWT_ISSUER: "coffeeapp"
+      JWT_AUDIENCE: "coffeeapp-mobile"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:
